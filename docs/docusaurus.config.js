@@ -23,7 +23,7 @@ const config = {
   },
   i18n: {
     defaultLocale: "en",
-    locales: ["en"],
+    locales: ["en", "pt-BR"],
   },
 
   presets: [
@@ -49,7 +49,7 @@ const config = {
         sitemap: {
           // https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-sitemap
           // https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap
-          lastmod: 'datetime',
+          lastmod: "datetime",
           changefreq: null,
           priority: null,
         },
@@ -103,6 +103,12 @@ const config = {
         },
         items: [
           // right
+          {
+            type: "localeDropdown",
+            sidebarId: "docsversion",
+            position: "right",
+            label: "Languages",
+          },
           {
             position: "right",
             href: "https://github.com/langflow-ai/langflow",
