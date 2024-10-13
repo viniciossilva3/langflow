@@ -1,0 +1,14 @@
+{
+  "title": {
+    "message": "Langflow",
+    "description": "O título na barra de navegação"
+  },
+  "logo.alt": {
+    "message": "Langflow",
+    "description": "O texto alternativo do logo na barra de navegação"
+  },
+  "item.label.Languages": {
+    "message": "Idiomas",
+    "description": "Item da barra de navegação com o rótulo Idiomas"
+  }
+}

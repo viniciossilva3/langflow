@@ -1,0 +1,54 @@
+{
+  "version.label": {
+    "message": "1.0.18",
+    "description": "The label for version current"
+  },
+  "sidebar.defaultSidebar.category.What’s New?": {
+    "message": "Novidades?",
+    "description": "The label for category What’s New? in sidebar defaultSidebar"
+  },
+  "sidebar.defaultSidebar.category.Getting Started": {
+    "message": "Introdução",
+    "description": "The label for category Getting Started in sidebar defaultSidebar"
+  },
+  "sidebar.defaultSidebar.category.Starter Projects": {
+    "message": "Projetos Iniciais",
+    "description": "The label for category Starter Projects in sidebar defaultSidebar"
+  },
+  "sidebar.defaultSidebar.category.Guides": {
+    "message": "Guias",
+    "description": "The label for category Guides in sidebar defaultSidebar"
+  },
+  "sidebar.defaultSidebar.category.Workspace": {
+    "message": "Área de Trabalho",
+    "description": "The label for category Workspace in sidebar defaultSidebar"
+  },
+  "sidebar.defaultSidebar.category.Components": {
+    "message": "Componentes",
+    "description": "The label for category Components in sidebar defaultSidebar"
+  },
+  "sidebar.defaultSidebar.category.Deployment": {
+    "message": "Implantação",
+    "description": "The label for category Deployment in sidebar defaultSidebar"
+  },
+  "sidebar.defaultSidebar.category.Settings": {
+    "message": "Configurações",
+    "description": "The label for category Settings in sidebar defaultSidebar"
+  },
+  "sidebar.defaultSidebar.category.Configuration": {
+    "message": "Configuração",
+    "description": "The label for category Configuration in sidebar defaultSidebar"
+  },
+  "sidebar.defaultSidebar.category.Integrations": {
+    "message": "Integrações",
+    "description": "The label for category Integrations in sidebar defaultSidebar"
+  },
+  "sidebar.defaultSidebar.category.Notion": {
+    "message": "Notion",
+    "description": "The label for category Notion in sidebar defaultSidebar"
+  },
+  "sidebar.defaultSidebar.category.Contributing": {
+    "message": "Contribuições",
+    "description": "The label for category Contributing in sidebar defaultSidebar"
+  }
+}
