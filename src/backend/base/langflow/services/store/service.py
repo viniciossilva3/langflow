@@ -53,8 +53,7 @@ async def user_data_context(store_service: StoreService, api_key: str | None = N
 
 
 def get_id_from_search_string(search_string: str) -> str | None:
-    """
-    Extracts the ID from a search string.
+    """Extracts the ID from a search string.
 
     Args:
         search_string (str): The search string to extract the ID from.
@@ -74,9 +73,10 @@ def get_id_from_search_string(search_string: str) -> str | None:
 
 
 class StoreService(Service):
-    """This is a service that integrates langflow with the store which
-    is a Directus instance. It allows to search, get and post components to
-    the store."""
+    """This is a service that integrates langflow with the store which is a Directus instance.
+
+    It allows to search, get and post components to the store.
+    """
 
     name = "store_service"
 
@@ -116,7 +116,7 @@ class StoreService(Service):
 
             return "id" in user_data[0]
         except HTTPStatusError as exc:
-            if exc.response.status_code in [403, 401]:
+            if exc.response.status_code in {403, 401}:
                 return False
             msg = f"Unexpected status code: {exc.response.status_code}"
             raise ValueError(msg) from exc

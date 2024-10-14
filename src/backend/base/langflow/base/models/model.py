@@ -64,11 +64,10 @@ class LCModelComponent(Component):
         return result
 
     def get_result(self, runnable: LLM, stream: bool, input_value: str):
-        """
-        Retrieves the result from the output of a Runnable object.
+        """Retrieves the result from the output of a Runnable object.
 
         Args:
-            output (Runnable): The output object to retrieve the result from.
+            runnable (Runnable): The runnable to retrieve the result from.
             stream (bool): Indicates whether to use streaming or invocation mode.
             input_value (str): The input value to pass to the output object.
 
@@ -82,15 +81,15 @@ class LCModelComponent(Component):
                 message = runnable.invoke(input_value)
                 result = message.content if hasattr(message, "content") else message
                 self.status = result
-            return result
         except Exception as e:
             if message := self._get_exception_message(e):
                 raise ValueError(message) from e
             raise
 
+        return result
+
     def build_status_message(self, message: AIMessage):
-        """
-        Builds a status message from an AIMessage object.
+        """Builds a status message from an AIMessage object.
 
         Args:
             message (AIMessage): The AIMessage object to build the status message from.
@@ -173,7 +172,7 @@ class LCModelComponent(Component):
         inputs: list | dict = messages or {}
         try:
             if self.output_parser is not None:
-                runnable = runnable | self.output_parser
+                runnable |= self.output_parser
 
             runnable = runnable.with_config(
                 {
@@ -194,14 +193,13 @@ class LCModelComponent(Component):
                 self.status = result
             else:
                 self.status = result
-            return result
         except Exception as e:
             if message := self._get_exception_message(e):
                 raise ValueError(message) from e
             raise
 
+        return result
+
     @abstractmethod
     def build_model(self) -> LanguageModel:  # type: ignore[type-var]
-        """
-        Implement this method to build the model.
-        """
+        """Implement this method to build the model."""

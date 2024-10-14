@@ -19,8 +19,7 @@ BASE_COMPONENTS_PATH = str(Path(__file__).parent.parent.parent / "components")
 
 
 def is_list_of_any(field: FieldInfo) -> bool:
-    """
-    Check if the given field is a list or an optional list of any type.
+    """Check if the given field is a list or an optional list of any type.
 
     Args:
         field (FieldInfo): The field to be checked.
@@ -365,7 +364,7 @@ class Settings(BaseSettings):
 
 
 def save_settings_to_yaml(settings: Settings, file_path: str):
-    with Path(file_path).open("w") as f:
+    with Path(file_path).open("w", encoding="utf-8") as f:
         settings_dict = settings.model_dump()
         yaml.dump(settings_dict, f)
 

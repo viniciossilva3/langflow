@@ -25,8 +25,7 @@ async def instantiate_class(
     user_id=None,
     event_manager: EventManager | None = None,
 ) -> Any:
-    """Instantiate class from module type and key, and params"""
-
+    """Instantiate class from module type and key, and params."""
     vertex_type = vertex.vertex_type
     base_type = vertex.base_type
     logger.debug(f"Instantiating {vertex_type} of type {base_type}")
@@ -77,7 +76,7 @@ def get_params(vertex_params):
 
 
 def convert_params_to_sets(params):
-    """Convert certain params to sets"""
+    """Convert certain params to sets."""
     if "allowed_special" in params:
         params["allowed_special"] = set(params["allowed_special"])
     if "disallowed_special" in params:
@@ -123,12 +122,12 @@ def update_params_with_load_from_db_fields(
                         raise
                     logger.debug(str(e))
                 if fallback_to_env_vars and key is None:
-                    var = os.getenv(params[field])
-                    if var is None:
+                    key = os.getenv(params[field])
+                    if key is None:
                         msg = f"Environment variable {params[field]} is not set."
-                        raise ValueError(msg)
-                    key = var
-                    logger.info(f"Using environment variable {params[field]} for {field}")
+                        logger.error(msg)
+                    else:
+                        logger.info(f"Using environment variable {params[field]} for {field}")
                 if key is None:
                     logger.warning(f"Could not get value for {field}. Setting it to None.")
 
