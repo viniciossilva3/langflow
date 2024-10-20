@@ -82,7 +82,7 @@ class DatabaseService(Service):
             msg = "Error creating database engine"
             raise RuntimeError(msg) from exc
 
-    def on_connection(self, dbapi_connection, connection_record):
+    def on_connection(self, dbapi_connection, _connection_record):
         from sqlite3 import Connection as sqliteConnection
 
         if isinstance(dbapi_connection, sqliteConnection):
@@ -168,7 +168,7 @@ class DatabaseService(Service):
         command.upgrade(alembic_cfg, "head")
         logger.info("Alembic initialized")
 
-    def run_migrations(self, fix=False):
+    def run_migrations(self, *, fix=False):
         # First we need to check if alembic has been initialized
         # If not, we need to initialize it
         # if not self.script_location.exists(): # this is not the correct way to check if alembic has been initialized
@@ -178,7 +178,7 @@ class DatabaseService(Service):
         # which is a buffer
         # I don't want to output anything
         # subprocess.DEVNULL is an int
-        with (self.script_location / "alembic.log").open("w") as buffer:
+        with (self.script_location / "alembic.log").open("w", encoding="utf-8") as buffer:
             alembic_cfg = Config(stdout=buffer)
             # alembic_cfg.attributes["connection"] = session
             alembic_cfg.set_main_option("script_location", str(self.script_location))

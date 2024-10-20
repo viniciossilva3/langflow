@@ -267,7 +267,7 @@ def get_user_id_from_token(token: str) -> UUID:
         return UUID(int=0)
 
 
-def create_user_tokens(user_id: UUID, db: Session = Depends(get_session), update_last_login: bool = False) -> dict:
+def create_user_tokens(user_id: UUID, db: Session = Depends(get_session), *, update_last_login: bool = False) -> dict:
     settings_service = get_settings_service()
 
     access_token_expires = timedelta(seconds=settings_service.auth_settings.ACCESS_TOKEN_EXPIRE_SECONDS)
@@ -360,8 +360,8 @@ def ensure_valid_key(s: str) -> bytes:
 
 
 def get_fernet(settings_service=Depends(get_settings_service)):
-    SECRET_KEY: str = settings_service.auth_settings.SECRET_KEY.get_secret_value()
-    valid_key = ensure_valid_key(SECRET_KEY)
+    secret_key: str = settings_service.auth_settings.SECRET_KEY.get_secret_value()
+    valid_key = ensure_valid_key(secret_key)
     return Fernet(valid_key)
 
 

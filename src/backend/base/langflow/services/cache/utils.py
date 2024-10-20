@@ -78,12 +78,12 @@ def filter_json(json_data):
 
 @create_cache_folder
 def save_binary_file(content: str, file_name: str, accepted_types: list[str]) -> str:
-    """
-    Save a binary file to the specified folder.
+    """Save a binary file to the specified folder.
 
     Args:
         content: The content of the file as a bytes object.
         file_name: The name of the file, including its extension.
+        accepted_types: A list of accepted file types.
 
     Returns:
         The path to the saved file.
@@ -104,16 +104,14 @@ def save_binary_file(content: str, file_name: str, accepted_types: list[str]) ->
     file_path = cache_path / file_name
 
     # Save the binary content to the file
-    with file_path.open("wb") as file:
-        file.write(decoded_bytes)
+    file_path.write_bytes(decoded_bytes)
 
     return str(file_path)
 
 
 @create_cache_folder
 def save_uploaded_file(file: UploadFile, folder_name):
-    """
-    Save an uploaded file to the specified folder with a hash of its content as the file name.
+    """Save an uploaded file to the specified folder with a hash of its content as the file name.
 
     Args:
         file: The uploaded file object.

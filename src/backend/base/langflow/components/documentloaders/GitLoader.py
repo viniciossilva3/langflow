@@ -59,8 +59,8 @@ class GitLoaderComponent(Component):
 
     @staticmethod
     def is_binary(file_path: str) -> bool:
-        """
-        Check if a file is binary by looking for null bytes.
+        """Check if a file is binary by looking for null bytes.
+
         This is necessary because when searches are performed using
         the content_filter, binary files need to be ignored.
         """
@@ -88,9 +88,8 @@ class GitLoaderComponent(Component):
             content_regex = re.compile(content_filter_pattern)
 
             def content_filter(file_path: Path) -> bool:
-                with file_path.open("r", encoding="utf-8", errors="ignore") as file:
-                    content = file.read()
-                    return bool(content_regex.search(content))
+                content = file_path.read_text(encoding="utf-8", errors="ignore")
+                return bool(content_regex.search(content))
 
             file_filters.append(content_filter)
 

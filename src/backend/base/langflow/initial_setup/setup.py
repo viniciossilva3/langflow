@@ -14,7 +14,11 @@ from emoji import demojize, purely_emoji
 from loguru import logger
 from sqlmodel import select
 
-from langflow.base.constants import FIELD_FORMAT_ATTRIBUTES, NODE_FORMAT_ATTRIBUTES, ORJSON_OPTIONS
+from langflow.base.constants import (
+    FIELD_FORMAT_ATTRIBUTES,
+    NODE_FORMAT_ATTRIBUTES,
+    ORJSON_OPTIONS,
+)
 from langflow.graph.graph.base import Graph
 from langflow.services.auth.utils import create_super_user
 from langflow.services.database.models.flow.model import Flow, FlowCreate
@@ -24,7 +28,12 @@ from langflow.services.database.models.folder.utils import (
     get_default_folder_id,
 )
 from langflow.services.database.models.user.crud import get_user_by_username
-from langflow.services.deps import get_settings_service, get_storage_service, get_variable_service, session_scope
+from langflow.services.deps import (
+    get_settings_service,
+    get_storage_service,
+    get_variable_service,
+    session_scope,
+)
 from langflow.template.field.prompt import DEFAULT_PROMPT_INTUT_TYPES
 from langflow.utils.util import escape_json_dump
 
@@ -237,10 +246,12 @@ def update_edges_with_latest_component_versions(project_data):
         target_handle = scape_json_parse(target_handle)
         # Now find the source and target nodes in the nodes list
         source_node = next(
-            (node for node in project_data.get("nodes", []) if node.get("id") == edge.get("source")), None
+            (node for node in project_data.get("nodes", []) if node.get("id") == edge.get("source")),
+            None,
         )
         target_node = next(
-            (node for node in project_data.get("nodes", []) if node.get("id") == edge.get("target")), None
+            (node for node in project_data.get("nodes", []) if node.get("id") == edge.get("target")),
+            None,
         )
         if source_node and target_node:
             source_node_data = source_node.get("data").get("node")
@@ -351,18 +362,18 @@ def load_starter_projects(retries=3, delay=1) -> list[tuple[Path, dict]]:
     for file in folder.glob("*.json"):
         attempt = 0
         while attempt < retries:
-            with file.open(encoding="utf-8") as f:
-                try:
-                    project = orjson.loads(f.read())
-                    starter_projects.append((file, project))
-                    logger.info(f"Loaded starter project {file}")
-                    break  # Break if load is successful
-                except orjson.JSONDecodeError as e:
-                    attempt += 1
-                    if attempt >= retries:
-                        msg = f"Error loading starter project {file}: {e}"
-                        raise ValueError(msg) from e
-                    time.sleep(delay)  # Wait before retrying
+            content = file.read_text(encoding="utf-8")
+            try:
+                project = orjson.loads(content)
+                starter_projects.append((file, project))
+                logger.info(f"Loaded starter project {file}")
+                break  # Break if load is successful
+            except orjson.JSONDecodeError as e:
+                attempt += 1
+                if attempt >= retries:
+                    msg = f"Error loading starter project {file}: {e}"
+                    raise ValueError(msg) from e
+                time.sleep(delay)  # Wait before retrying
     return starter_projects
 
 
@@ -397,8 +408,10 @@ def get_project_data(project):
         updated_at_datetime = datetime.fromisoformat(project_updated_at)
     project_data = project.get("data")
     project_icon = project.get("icon")
-    project_icon = demojize(project_icon) if project_icon and purely_emoji(project_icon) else ""
+    project_icon = demojize(project_icon) if project_icon and purely_emoji(project_icon) else project_icon
     project_icon_bg_color = project.get("icon_bg_color")
+    project_gradient = project.get("gradient")
+    project_tags = project.get("tags")
     return (
         project_name,
         project_description,
@@ -407,13 +420,14 @@ def get_project_data(project):
         project_data,
         project_icon,
         project_icon_bg_color,
+        project_gradient,
+        project_tags,
     )
 
 
 def update_project_file(project_path: Path, project: dict, updated_project_data):
     project["data"] = updated_project_data
-    with project_path.open("w", encoding="utf-8") as f:
-        f.write(orjson.dumps(project, option=ORJSON_OPTIONS).decode())
+    project_path.write_text(orjson.dumps(project, option=ORJSON_OPTIONS).decode(), encoding="utf-8")
     logger.info(f"Updated starter project {project['name']} file")
 
 
@@ -444,6 +458,8 @@ def create_new_project(
     project_is_component,
     updated_at_datetime,
     project_data,
+    project_gradient,
+    project_tags,
     project_icon,
     project_icon_bg_color,
     new_folder_id,
@@ -458,6 +474,8 @@ def create_new_project(
         is_component=project_is_component,
         updated_at=updated_at_datetime,
         folder_id=new_folder_id,
+        gradient=project_gradient,
+        tags=project_tags,
     )
     db_flow = Flow.model_validate(new_project, from_attributes=True)
     session.add(db_flow)
@@ -499,8 +517,7 @@ def _is_valid_uuid(val):
 
 
 def load_flows_from_directory():
-    """
-    On langflow startup, this loads all flows from the directory specified in the settings.
+    """On langflow startup, this loads all flows from the directory specified in the settings.
 
     All flows are uploaded into the default folder for the superuser.
     Note that this feature currently only works if AUTO_LOGIN is enabled in the settings.
@@ -521,44 +538,44 @@ def load_flows_from_directory():
             if f.suffix != ".json":
                 continue
             logger.info(f"Loading flow from file: {f.name}")
-            with f.open(encoding="utf-8") as file:
-                flow = orjson.loads(file.read())
-                no_json_name = f.stem
-                flow_endpoint_name = flow.get("endpoint_name")
-                if _is_valid_uuid(no_json_name):
-                    flow["id"] = no_json_name
-                flow_id = flow.get("id")
+            content = f.read_text(encoding="utf-8")
+            flow = orjson.loads(content)
+            no_json_name = f.stem
+            flow_endpoint_name = flow.get("endpoint_name")
+            if _is_valid_uuid(no_json_name):
+                flow["id"] = no_json_name
+            flow_id = flow.get("id")
 
-                existing = find_existing_flow(session, flow_id, flow_endpoint_name)
-                if existing:
-                    logger.debug(f"Found existing flow: {existing.name}")
-                    logger.info(f"Updating existing flow: {flow_id} with endpoint name {flow_endpoint_name}")
-                    for key, value in flow.items():
-                        if hasattr(existing, key):
-                            # flow dict from json and db representation are not 100% the same
-                            setattr(existing, key, value)
-                    existing.updated_at = datetime.now(tz=timezone.utc).astimezone()
-                    existing.user_id = user_id
+            existing = find_existing_flow(session, flow_id, flow_endpoint_name)
+            if existing:
+                logger.debug(f"Found existing flow: {existing.name}")
+                logger.info(f"Updating existing flow: {flow_id} with endpoint name {flow_endpoint_name}")
+                for key, value in flow.items():
+                    if hasattr(existing, key):
+                        # flow dict from json and db representation are not 100% the same
+                        setattr(existing, key, value)
+                existing.updated_at = datetime.now(tz=timezone.utc).astimezone()
+                existing.user_id = user_id
 
-                    # Generally, folder_id should not be None, but we must check this due to the previous
-                    # behavior where flows could be added and folder_id was None, orphaning
-                    # them within Langflow.
-                    if existing.folder_id is None:
-                        folder_id = get_default_folder_id(session, user_id)
-                        existing.folder_id = folder_id
-
-                    session.add(existing)
-                else:
-                    logger.info(f"Creating new flow: {flow_id} with endpoint name {flow_endpoint_name}")
-
-                    # Current behavior loads all new flows into default folder
+                # Generally, folder_id should not be None, but we must check this due to the previous
+                # behavior where flows could be added and folder_id was None, orphaning
+                # them within Langflow.
+                if existing.folder_id is None:
                     folder_id = get_default_folder_id(session, user_id)
+                    existing.folder_id = folder_id
 
-                    flow["user_id"] = user_id
-                    flow["folder_id"] = folder_id
-                    flow = Flow.model_validate(flow, from_attributes=True)
-                    flow.updated_at = datetime.now(tz=timezone.utc).astimezone()
-                    session.add(flow)
+                session.add(existing)
+            else:
+                logger.info(f"Creating new flow: {flow_id} with endpoint name {flow_endpoint_name}")
+
+                # Current behavior loads all new flows into default folder
+                folder_id = get_default_folder_id(session, user_id)
+
+                flow["user_id"] = user_id
+                flow["folder_id"] = folder_id
+                flow = Flow.model_validate(flow, from_attributes=True)
+                flow.updated_at = datetime.now(tz=timezone.utc).astimezone()
+                session.add(flow)
 
 
 def find_existing_flow(session, flow_id, flow_endpoint_name):
@@ -595,6 +612,8 @@ async def create_or_update_starter_projects(get_all_components_coro: Awaitable[d
                 project_data,
                 project_icon,
                 project_icon_bg_color,
+                project_gradient,
+                project_tags,
             ) = get_project_data(project)
             updated_project_data = update_projects_components_with_latest_component_versions(
                 project_data.copy(), all_types_dict
@@ -614,15 +633,17 @@ async def create_or_update_starter_projects(get_all_components_coro: Awaitable[d
                     session.delete(existing_project)
 
                 create_new_project(
-                    session,
-                    project_name,
-                    project_description,
-                    project_is_component,
-                    updated_at_datetime,
-                    project_data,
-                    project_icon,
-                    project_icon_bg_color,
-                    new_folder.id,
+                    session=session,
+                    project_name=project_name,
+                    project_description=project_description,
+                    project_is_component=project_is_component,
+                    updated_at_datetime=updated_at_datetime,
+                    project_data=project_data,
+                    project_icon=project_icon,
+                    project_icon_bg_color=project_icon_bg_color,
+                    project_gradient=project_gradient,
+                    project_tags=project_tags,
+                    new_folder_id=new_folder.id,
                 )
 
 
