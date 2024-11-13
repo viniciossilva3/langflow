@@ -23,7 +23,7 @@ const config = {
   },
   i18n: {
     defaultLocale: "en",
-    locales: ["en"],
+    locales: ["en", "pt-BR", "es"],
   },
 
   presets: [
@@ -119,6 +119,10 @@ const config = {
         },
         items: [
           // right
+          {
+            type:"localeDropdown",
+            position: "right"
+          },
           {
             position: "right",
             href: "https://github.com/langflow-ai/langflow",
