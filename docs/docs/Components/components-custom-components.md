@@ -516,6 +516,34 @@ This example shows how to define multiple outputs in a custom component. The fir
 The `processing_function` output can be used in scenarios where the function itself is needed for further processing or dynamic flow control. Notice how both outputs are properly annotated with their respective types, ensuring clarity and type safety.
 
 
+## Adding Logs to Components
+
+When developing custom components, you can add logs to help debug and monitor your component's execution. These logs will be visible in the Langflow UI under the Logs panel.
+
+There are two main ways to add logs in your components:
+
+1. Using the component's `self.log()` method (appears in Langflow UI):
+```python
+def process_data(self):
+    self.log("Processing data...")  # This will appear in the Logs panel
+    # Your processing logic here
+    self.log("Data processing completed")  # This will appear in the Logs panel
+```
+
+2. Using the Loguru logger (appears only in terminal output):
+```python
+from loguru import logger
+
+def complex_operation(self):
+    try:
+        # Your operation here
+        logger.info("Operation successful")  # This will only appear in the terminal
+    except Exception as e:
+        logger.error(f"Operation failed: {str(e)}")  # This will only appear in the terminal
+```
+
+Note: Only logs created with `self.log()` will appear in the Langflow UI's Logs panel. Logs created with Loguru will only be visible in the terminal output where Langflow is running.
+
 ## Special Operations
 
 Advanced methods and attributes offer additional control and functionality. Understanding how to leverage these can enhance your custom components' capabilities.
@@ -525,6 +553,7 @@ Advanced methods and attributes offer additional control and functionality. Unde
 - `self.status`: Use this to update the component's status or intermediate results. It helps track the component's internal state or store temporary data.
 - `self.graph.flow_id`: Retrieve the flow ID, useful for maintaining context or debugging.
 - `self.stop("output_name")`: Use this method within an output function to prevent data from being sent through other components. This method stops next component execution and is particularly useful for specific operations where a component should stop from running based on specific conditions.
+- `self.log()`: Use this method to add logs that will be visible in the Langflow UI's Logs panel.
 
 ## Contribute Custom Components to Langflow
 
