@@ -18,7 +18,11 @@ class GroqModel(LCModelComponent):
     inputs = [
         *LCModelComponent._base_inputs,
         SecretStrInput(
-            name="api_key", display_name="Groq API Key", info="API key for the Groq API.", real_time_refresh=True
+            name="api_key",
+            display_name="Groq API Key",
+            info="API key for the Groq API.",
+            real_time_refresh=True,
+            required=True,
         ),
         MessageTextInput(
             name="base_url",
