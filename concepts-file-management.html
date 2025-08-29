@@ -22,9 +22,9 @@
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@550;600&amp;display=swap">
 <script>!function(){window.semaphore=window.semaphore||[],window.ketch=function(){window.semaphore.push(arguments)};var e=document.createElement("script");e.type="text/javascript",e.src="https://global.ketchcdn.com/web/v3/config/datastax/langflow_org_web/boot.js",e.defer=e.async=!0,document.getElementsByTagName("head")[0].appendChild(e)}()</script>
-<script defer="true">!function(){const e=e=>{if(window.gtag&&e.purposes&&"analytics"in e.purposes&&"targeted_advertising"in e.purposes){const n=!0===e.purposes.analytics?"granted":"denied",t=!0===e.purposes.targeted_advertising?"granted":"denied",a={analytics_storage:n,ad_personalization:t,ad_storage:t,ad_user_data:t};window.gtag("consent","update",a)}};window.ketch&&window.ketch("on","consent",e)}()</script><link rel="stylesheet" href="/assets/css/styles.e756ed1e.css">
-<script src="/assets/js/runtime~main.b9f2d567.js" defer="defer"></script>
-<script src="/assets/js/main.d99d2e9d.js" defer="defer"></script>
+<script defer="true">!function(){const e=e=>{if(window.gtag&&e.purposes&&"analytics"in e.purposes&&"targeted_advertising"in e.purposes){const n=!0===e.purposes.analytics?"granted":"denied",t=!0===e.purposes.targeted_advertising?"granted":"denied",a={analytics_storage:n,ad_personalization:t,ad_storage:t,ad_user_data:t};window.gtag("consent","update",a)}};window.ketch&&window.ketch("on","consent",e)}()</script><link rel="stylesheet" href="/assets/css/styles.40667d1b.css">
+<script src="/assets/js/runtime~main.19f4ffe7.js" defer="defer"></script>
+<script src="/assets/js/main.390bf7bf.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;"><defs>
@@ -93,7 +93,29 @@ If you need another file type, you must use a different component that supports 
 <p>For more information about the <strong>File</strong> component and other data loading components, see <a href="/components-data"><strong>Data</strong> components</a>.</p>
 <h3 class="anchor anchorWithHideOnScrollNavbar_WYt5" id="load-files-at-runtime">Load files at runtime<a href="#load-files-at-runtime" class="hash-link" aria-label="Direct link to Load files at runtime" title="Direct link to Load files at runtime">​</a></h3>
 <p>You can use preloaded files in your flows, and you can load files at runtime, if your flow accepts file input.
-For an example, see <a href="/chat-with-files">Create a chatbot that can ingest files</a>.</p>
+To enable file input in your flow, do the following:</p>
+<ol>
+<li>
+<p>Add a <a href="/components-data#file"><strong>File</strong> component</a> to your flow.</p>
+</li>
+<li>
+<p>Click <strong>Share</strong>, select <strong>API access</strong>, and then click <strong>Input Schema</strong> to add <a href="/concepts-publish#input-schema"><code>tweaks</code></a> to the request payload in the flow&#x27;s automatically generated code snippets.</p>
+</li>
+<li>
+<p>Expand the <strong>File</strong> section, find the <strong>Files</strong> row, and then enable <strong>Expose Input</strong> to allow the parameter to be set at runtime through the Langflow API.</p>
+</li>
+<li>
+<p>Close the <strong>Input Schema</strong> pane to return to the <strong>API access</strong> pane.
+The payload in each code snippet now includes <code>tweaks</code>, your <strong>File</strong> component&#x27;s ID, and the <code>path</code> key that you enabled in <strong>Input Schema</strong>:</p>
+<div class="ch-codeblock not-prose" data-ch-theme="github-dark"><div class="ch-code-wrapper ch-code" data-ch-measured="false"><code class="ch-code-scroll-parent"><br><div><span class="ch-code-line-number">_<!-- -->10</span><div style="display:inline-block;margin-left:16px"><span>&quot;tweaks&quot;: {</span></div></div><div><span class="ch-code-line-number">_<!-- -->10</span><div style="display:inline-block;margin-left:16px"><span>    &quot;File-qYD5w&quot;: {</span></div></div><div><span class="ch-code-line-number">_<!-- -->10</span><div style="display:inline-block;margin-left:16px"><span>	    &quot;path&quot;: []</span></div></div><div><span class="ch-code-line-number">_<!-- -->10</span><div style="display:inline-block;margin-left:16px"><span>    }</span></div></div><div><span class="ch-code-line-number">_<!-- -->10</span><div style="display:inline-block;margin-left:16px"><span>}</span></div></div><br></code></div></div>
+</li>
+<li>
+<p>When you run this flow programmatically, your script must upload a file to Langflow file management, and then pass the returned <code>file_path</code> to the <code>path</code> tweak in the <code>/run</code> request:</p>
+<div class="ch-codeblock not-prose" data-ch-theme="github-dark"><div class="ch-code-wrapper ch-code" data-ch-measured="false"><code class="ch-code-scroll-parent"><br><div><span class="ch-code-line-number">_<!-- -->10</span><div style="display:inline-block;margin-left:16px"><span>&quot;tweaks&quot;: {</span></div></div><div><span class="ch-code-line-number">_<!-- -->10</span><div style="display:inline-block;margin-left:16px"><span>    &quot;FILE_COMPONENT_ID&quot;: {</span></div></div><div><span class="ch-code-line-number">_<!-- -->10</span><div style="display:inline-block;margin-left:16px"><span>        &quot;path&quot;: [ &quot;file_path&quot; ]</span></div></div><div><span class="ch-code-line-number">_<!-- -->10</span><div style="display:inline-block;margin-left:16px"><span>    }</span></div></div><div><span class="ch-code-line-number">_<!-- -->10</span><div style="display:inline-block;margin-left:16px"><span>}</span></div></div><br></code></div></div>
+<p>For a complete example see <a href="/chat-with-files">Create a chatbot that can ingest files</a> and <a href="/api-files">Files endpoints</a>.</p>
+<p>If you want to upload multiple files, you can pass multiple <code>file_path</code> values in the <code>path</code> array, such as <code>[ &quot;path1&quot;, &quot;path2&quot; ]</code>.</p>
+</li>
+</ol>
 <h2 class="anchor anchorWithHideOnScrollNavbar_WYt5" id="upload-images">Upload images<a href="#upload-images" class="hash-link" aria-label="Direct link to Upload images" title="Direct link to Upload images">​</a></h2>
 <p>Langflow supports base64 images in the following formats:</p>
 <ul>
@@ -126,6 +148,6 @@ To modify this value, change the <code>--max-file-size-upload</code> <a href="/e
 </ul></div></article><nav class="docusaurus-mt-lg pagination-nav" aria-label="Docs pages"><a class="pagination-nav__link pagination-nav__link--prev" href="/environment-variables"><div class="pagination-nav__sublabel">Previous</div><div class="pagination-nav__label">Environment variables</div></a><a class="pagination-nav__link pagination-nav__link--next" href="/memory"><div class="pagination-nav__sublabel">Next</div><div class="pagination-nav__label">Manage memory</div></a></nav></div></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar theme-doc-toc-desktop"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#use-the-file-management-ui" class="table-of-contents__link toc-highlight">Use the file management UI</a></li><li><a href="#upload-and-manage-files-with-the-langflow-api" class="table-of-contents__link toc-highlight">Upload and manage files with the Langflow API</a></li><li><a href="#use-files-in-a-flow" class="table-of-contents__link toc-highlight">Use files in a flow</a><ul><li><a href="#load-files-at-runtime" class="table-of-contents__link toc-highlight">Load files at runtime</a></li></ul></li><li><a href="#upload-images" class="table-of-contents__link toc-highlight">Upload images</a></li><li><a href="#work-with-video-files" class="table-of-contents__link toc-highlight">Work with video files</a></li><li><a href="#set-the-maximum-file-size" class="table-of-contents__link toc-highlight">Set the maximum file size</a></li><li><a href="#see-also" class="table-of-contents__link toc-highlight">See also</a></li></ul></div></div></div></div></main></div></div></div><footer class="theme-layout-footer footer"><div class="container container-fluid"><div class="row footer__links"><div class="theme-layout-footer-column col footer__col"><div class="footer__title"></div><ul class="footer__items clean-list"><li class="footer__item"><div class="footer-links">
                   <span>© 2025 Langflow</span>
                   <span id="preferenceCenterContainer"> ·&nbsp; <a href="https://langflow.org/preferences">Manage Privacy Choices</a></span>
-                  </div></li></ul></div></div><div class="footer__bottom text--center"><div class="margin-bottom--sm"><img src="/img/lf-docs-light.svg" alt="Langflow" class="footer__logo themedComponent_mlkZ themedComponent--light_NVdE" width="160" height="40"><img src="/img/lf-docs-dark.svg" alt="Langflow" class="footer__logo themedComponent_mlkZ themedComponent--dark_xIcU" width="160" height="40"></div></div></div></footer><div style="position:fixed;right:20px;bottom:20px;z-index:100;display:flex;align-items:center;gap:10px;cursor:pointer"><div style="background-color:#f6f6f6;border-radius:50%;width:48px;height:48px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 4px rgba(0,0,0,0.1)"><img src="/img/langflow-icon-black-transparent.svg" style="width:40px" alt="Search"></div></div></div>
+                  </div></li></ul></div></div></div></footer><div style="position:fixed;right:21px;bottom:21px;z-index:100;display:flex;align-items:center;gap:10px;cursor:pointer"><div style="background-color:#f6f6f6;border-radius:50%;width:48px;height:48px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 4px rgba(0,0,0,0.1)"><img src="/img/langflow-icon-black-transparent.svg" style="width:40px" alt="Search"></div></div></div>
 </body>
 </html>
